@@ -9,6 +9,8 @@ namespace AddressBookProblem
     {
         private Dictionary<string, Contact> addressBook = new Dictionary<string, Contact>();
         private Dictionary<string, AddressBook> addressBookDictionary = new Dictionary<string, AddressBook>();
+        private Dictionary<Contact, string> cityDictionary = new Dictionary<Contact, string>();
+        private Dictionary<Contact, string> stateDictionary = new Dictionary<Contact, string>();
         public void AddContact(string firstName, string lastName, string address, string city, string state, string email, int zip, long phoneNumber, string bookName)
         {
             Contact contact = new Contact(firstName, lastName, address, city, state, email, zip, phoneNumber);
@@ -115,7 +117,7 @@ namespace AddressBookProblem
         {
             return addressBookDictionary;
         }
-        public List<Contact> GetListOfDictctionaryKeys(string bookName)
+        public List<Contact> GetListOfDictctionaryValues(string bookName)
         {
             List<Contact> book = new List<Contact>();
             foreach (var value in addressBookDictionary[bookName].addressBook.Values)
@@ -124,10 +126,10 @@ namespace AddressBookProblem
             }
             return book;
         }
-        public List<Contact> GetListOfDictctionaryKeys2(Dictionary<string, Contact> d)
+        public List<Contact> GetListOfDictctionaryKeys(Dictionary<Contact, string> d)
         {
             List<Contact> book = new List<Contact>();
-            foreach (var value in d.Values)
+            foreach (var value in d.Keys)
             {
                 book.Add(value);
             }
@@ -135,7 +137,7 @@ namespace AddressBookProblem
         }
         public bool CheckDuplicateEntry(Contact c, string bookName)
         {
-            List<Contact> book = GetListOfDictctionaryKeys(bookName);
+            List<Contact> book = GetListOfDictctionaryValues(bookName);
             if (book.Any(b => b.Equals(c)))
             {
                 Console.WriteLine("Name already Exists.");
@@ -147,7 +149,8 @@ namespace AddressBookProblem
         {
             foreach (AddressBook addressbookobj in addressBookDictionary.Values)
             {
-                List<Contact> contactList = GetListOfDictctionaryKeys2(addressbookobj.addressBook);
+                CreateCityDictionary();
+                List<Contact> contactList = GetListOfDictctionaryKeys(addressbookobj.cityDictionary);
                 foreach (Contact contact in contactList.FindAll(c => c.City.Equals(city)).ToList())
                 {
                     Console.WriteLine(contact.ToString());
@@ -158,10 +161,31 @@ namespace AddressBookProblem
         {
             foreach (AddressBook addressbookobj in addressBookDictionary.Values)
             {
-                List<Contact> contactList = GetListOfDictctionaryKeys2(addressbookobj.addressBook);
+                CreateStateDictionary();
+                List<Contact> contactList = GetListOfDictctionaryKeys(addressbookobj.stateDictionary);
                 foreach (Contact contact in contactList.FindAll(c => c.State.Equals(state)).ToList())
                 {
                     Console.WriteLine(contact.ToString());
+                }
+            }
+        }
+        public void CreateCityDictionary()
+        {
+            foreach (AddressBook addressBookObj in addressBookDictionary.Values)
+            {
+                foreach (Contact contact in addressBookObj.addressBook.Values)
+                {
+                    addressBookObj.cityDictionary.Add(contact, contact.City);
+                }
+            }
+        }
+        public void CreateStateDictionary()
+        {
+            foreach (AddressBook addressBookObj in addressBookDictionary.Values)
+            {
+                foreach (Contact contact in addressBookObj.addressBook.Values)
+                {
+                    addressBookObj.stateDictionary.Add(contact, contact.State);
                 }
             }
         }
